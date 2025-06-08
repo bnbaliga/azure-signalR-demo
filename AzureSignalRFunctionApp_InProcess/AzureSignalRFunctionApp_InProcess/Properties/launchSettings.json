@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "AzureSignalRFunctionApp_InProcess": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7041",
+      "launchBrowser": false
+    }
+  }
+}
