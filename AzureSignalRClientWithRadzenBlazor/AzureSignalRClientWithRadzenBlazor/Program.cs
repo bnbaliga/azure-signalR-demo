@@ -1,7 +1,6 @@
 using Radzen;
 using AzureSignalRClientWithRadzenBlazor.Components;
 using AzureSignalRClientWithRadzenBlazor.SignalR;
-using System.Text.Encodings.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +10,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddControllers();
 builder.Services.AddRadzenComponents();
+builder.Services.AddSingleton<NotificationService>();
 
 builder.Services.AddRadzenCookieThemeService(options =>
 {
@@ -20,12 +20,13 @@ builder.Services.AddRadzenCookieThemeService(options =>
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ISignalRConnector, SignalRConnector>();
 
-builder.Services.AddSignalR()
-    .AddAzureSignalR(options =>
-    {
-        // Configure Azure SignalR Service connection string
-        options.ConnectionString = builder.Configuration.GetConnectionString("AzureSignalRConnectionString");
-    });
+builder.Services.AddSignalR();
+//builder.Services.AddSignalR()
+//    .AddAzureSignalR(options =>
+//    {
+//        // Configure Azure SignalR Service connection string
+//        options.ConnectionString = builder.Configuration.GetConnectionString("AzureSignalRConnectionString");
+//    });
 
 builder.Services.AddHttpClient("SignalRApi", client =>
 {

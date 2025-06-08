@@ -18,13 +18,25 @@ namespace AzureSignalRFunctionApp_InProcess
         [FunctionName("negotiate")]
         public static SignalRConnectionInfo Negotiate(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
-            [SignalRConnectionInfo(HubName = "SignalRDemo")] SignalRConnectionInfo connectionInfo)
+            [SignalRConnectionInfo(HubName = "PMCDemo")] SignalRConnectionInfo connectionInfo)
         {
             return connectionInfo;
         }
 
         [FunctionName("broadcast")]
         public static async Task Broadcast([TimerTrigger("*/5 * * * * *")] TimerInfo myTimer,
+        [SignalR(HubName = "serverless")] IAsyncCollector<SignalRMessage> signalRMessages)
+        {
+            await signalRMessages.AddAsync(
+            new SignalRMessage
+            {
+                Target = "PMCDemo",
+                Arguments = ["This is a sample message"]
+            });
+        }
+
+        [FunctionName("timerbroadcast")]
+        public static async Task TimerBroadcast([TimerTrigger("*/5 * * * * *")] TimerInfo myTimer,
         [SignalR(HubName = "serverless")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/azure/azure-signalr");
@@ -44,9 +56,9 @@ namespace AzureSignalRFunctionApp_InProcess
             await signalRMessages.AddAsync(
             new SignalRMessage
             {
-                    Target = "newMessage",
-                    Arguments = new[] { $"Current star count of https://github.com/Azure/azure-signalr is: {StarCount}" }
-                });
+                Target = "PMCDemo",
+                Arguments = new[] { $"Current star count of https://github.com/Azure/azure-signalr is: {StarCount}" }
+            });
         }
 
         private class GitResult

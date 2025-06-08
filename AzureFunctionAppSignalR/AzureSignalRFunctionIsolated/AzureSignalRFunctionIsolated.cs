@@ -1,17 +1,15 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using AzureFunctionAppSignalR_Isolated.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Newtonsoft.Json;
 
 namespace AzureFunctionAppSignalR
 {
     public class Functions
     {
-        private static readonly HttpClient HttpClient = new();
-        private static string Etag = string.Empty;
-        private static int StarCount = 0;
-
         [Function("index")]
         public static HttpResponseData GetHomePage([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequestData req)
         {
@@ -25,6 +23,7 @@ namespace AzureFunctionAppSignalR
         public async Task<HttpResponseData> Negotiate([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequestData req,
             [SignalRConnectionInfoInput(HubName = "serverless")] string connectionInfo)
         {
+
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
             await response.WriteStringAsync(connectionInfo);
@@ -32,29 +31,46 @@ namespace AzureFunctionAppSignalR
             return response;
         }
 
+        [Function("broadcast")]
+        public async Task<SignalRMessageAction> Broadcast([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
+            [SignalRConnectionInfoInput(HubName = "serverless")] string connectionInfo)
+        {
+            var broadcastModel = new BroadcastModel();
+            var query = await req.ReadAsStringAsync();
+
+            if (string.IsNullOrEmpty(query))
+                throw new ArgumentException("Query cannot be null or empty.");
+
+            broadcastModel = JsonConvert.DeserializeObject<BroadcastModel>(query);
+
+            if (broadcastModel == null || string.IsNullOrEmpty(broadcastModel.Target) || string.IsNullOrEmpty(broadcastModel.Message))
+                throw new ArgumentException("Invalid broadcast model.");
+
+            return new SignalRMessageAction(broadcastModel.Target, [broadcastModel.Message]);
+        }
 
 
-        //[Function("broadcast")]
-        //[SignalROutput(HubName = "serverless", ConnectionStringSetting = "AzureSignalRConnectionString")]
-        //public static async Task<SignalRMessageAction> Broadcast([TimerTrigger("*/5 * * * * *")] TimerInfo timerInfo)
+        //[function("broadcast")]
+        //[signalroutput(hubname = "serverless", connectionstringsetting = "azuresignalrconnectionstring")]
+        //public static async task<signalrmessageaction> broadcast([timertrigger("*/5 * * * * *")] timerinfo timerinfo)
         //{
-        //    var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/azure/azure-signalr");
-        //    request.Headers.UserAgent.ParseAdd("Serverless");
-        //    request.Headers.Add("If-None-Match", Etag);
-        //    var response = await HttpClient.SendAsync(request);
-        //    if (response.Headers.Contains("Etag"))
+        //    var request = new httprequestmessage(httpmethod.get, "https://api.github.com/repos/azure/azure-signalr");
+        //    request.headers.useragent.parseadd("serverless");
+        //    request.headers.add("if-none-match", etag);
+        //    var response = await httpclient.sendasync(request);
+        //    if (response.headers.contains("etag"))
         //    {
-        //        Etag = response.Headers.GetValues("Etag").First();
+        //        etag = response.headers.getvalues("etag").first();
         //    }
-        //    if (response.StatusCode == HttpStatusCode.OK)
+        //    if (response.statuscode == httpstatuscode.ok)
         //    {
-        //        var result = await response.Content.ReadFromJsonAsync<GitResult>();
+        //        var result = await response.content.readfromjsonasync<gitresult>();
         //        if (result != null)
         //        {
-        //            StarCount = result.StarCount;
+        //            starcount = result.starcount;
         //        }
         //    }
-        //    return new SignalRMessageAction("newMessage", new object[] { $"Current star count of https://github.com/Azure/azure-signalr is: {StarCount}" });
+        //    return new signalrmessageaction("newmessage", new object[] { $"current star count of https://github.com/azure/azure-signalr is: {starcount}" });
         //}
 
         private class GitResult

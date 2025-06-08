@@ -36,11 +36,6 @@ namespace AzureSignalRClientWithRadzenBlazor.Components.Pages
         [Inject]
         protected ISignalRConnector SignalRConnector { get; set; }
 
-        //public Index(ISignalRConnector signalRConnector)
-        //{
-
-        //}
-
         protected override async Task OnInitializedAsync()
         {
             await SignalRConnector.StartConnection();

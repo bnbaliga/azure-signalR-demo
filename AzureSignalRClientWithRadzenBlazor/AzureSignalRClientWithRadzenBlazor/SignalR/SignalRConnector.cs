@@ -1,8 +1,7 @@
 ﻿using AzureSignalRClientWithRadzenBlazor.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Options;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AzureSignalRClientWithRadzenBlazor.SignalR
 {
@@ -19,6 +18,12 @@ namespace AzureSignalRClientWithRadzenBlazor.SignalR
 
         public async Task StartConnection()
         {
+            if (_hubConnection != null && _hubConnection.State == HubConnectionState.Connected)
+            {
+                connectionState = "Already connected";
+                return;
+            }
+
             try
             {
                 // 1. Negotiate with SignalR
@@ -32,12 +37,29 @@ namespace AzureSignalRClientWithRadzenBlazor.SignalR
                         {
                             options.AccessTokenProvider = () => Task.FromResult(negotiationResult.AccessToken);
                         })
+                        .AddJsonProtocol(cfg =>
+                        {
+                            var jsonOptions = new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true,
+                            };
+                            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+
+                            cfg.PayloadSerializerOptions = jsonOptions;
+                        })
                         .WithAutomaticReconnect()
                         .Build();
 
                     // 3. Start the Hub Connection
                     await _hubConnection.StartAsync();
                     connectionState = "Connected";
+
+                    _hubConnection.On<string>("PMCDemo", (message) =>
+                    {
+                        //NotificationService.Notify(new NotificationMessage() {Summary = message });
+                        Console.WriteLine($"Message received: {message}");
+                        // Handle the message as needed
+                    });
                 }
                 else
                 {
