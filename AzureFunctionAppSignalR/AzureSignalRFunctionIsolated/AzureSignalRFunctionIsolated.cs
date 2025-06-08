@@ -22,37 +22,40 @@ namespace AzureFunctionAppSignalR
         }
 
         [Function("negotiate")]
-        public static HttpResponseData Negotiate([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequestData req,
+        public async Task<HttpResponseData> Negotiate([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequestData req,
             [SignalRConnectionInfoInput(HubName = "serverless")] string connectionInfo)
         {
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
-            response.WriteString(connectionInfo);
+            await response.WriteStringAsync(connectionInfo);
+
             return response;
         }
 
-        [Function("broadcast")]
-        [SignalROutput(HubName = "serverless", ConnectionStringSetting = "AzureSignalRConnectionString")]
-        public static async Task<SignalRMessageAction> Broadcast([TimerTrigger("*/5 * * * * *")] TimerInfo timerInfo)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/azure/azure-signalr");
-            request.Headers.UserAgent.ParseAdd("Serverless");
-            request.Headers.Add("If-None-Match", Etag);
-            var response = await HttpClient.SendAsync(request);
-            if (response.Headers.Contains("Etag"))
-            {
-                Etag = response.Headers.GetValues("Etag").First();
-            }
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                var result = await response.Content.ReadFromJsonAsync<GitResult>();
-                if (result != null)
-                {
-                    StarCount = result.StarCount;
-                }
-            }
-            return new SignalRMessageAction("newMessage", new object[] { $"Current star count of https://github.com/Azure/azure-signalr is: {StarCount}" });
-        }
+
+
+        //[Function("broadcast")]
+        //[SignalROutput(HubName = "serverless", ConnectionStringSetting = "AzureSignalRConnectionString")]
+        //public static async Task<SignalRMessageAction> Broadcast([TimerTrigger("*/5 * * * * *")] TimerInfo timerInfo)
+        //{
+        //    var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/azure/azure-signalr");
+        //    request.Headers.UserAgent.ParseAdd("Serverless");
+        //    request.Headers.Add("If-None-Match", Etag);
+        //    var response = await HttpClient.SendAsync(request);
+        //    if (response.Headers.Contains("Etag"))
+        //    {
+        //        Etag = response.Headers.GetValues("Etag").First();
+        //    }
+        //    if (response.StatusCode == HttpStatusCode.OK)
+        //    {
+        //        var result = await response.Content.ReadFromJsonAsync<GitResult>();
+        //        if (result != null)
+        //        {
+        //            StarCount = result.StarCount;
+        //        }
+        //    }
+        //    return new SignalRMessageAction("newMessage", new object[] { $"Current star count of https://github.com/Azure/azure-signalr is: {StarCount}" });
+        //}
 
         private class GitResult
         {

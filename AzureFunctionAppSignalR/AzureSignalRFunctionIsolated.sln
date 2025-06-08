@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionAppSignalR_Isolated", "AzureFunctionAppSignalR\AzureFunctionAppSignalR_Isolated.csproj", "{AA3D4BD0-00D2-4B5A-98E7-EEA83F8B56FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionAppSignalR_Isolated", "AzureSignalRFunctionIsolated\AzureFunctionAppSignalR_Isolated.csproj", "{5D76D387-1BC7-8509-9E14-5D5FB3BA12E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AA3D4BD0-00D2-4B5A-98E7-EEA83F8B56FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA3D4BD0-00D2-4B5A-98E7-EEA83F8B56FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA3D4BD0-00D2-4B5A-98E7-EEA83F8B56FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA3D4BD0-00D2-4B5A-98E7-EEA83F8B56FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D76D387-1BC7-8509-9E14-5D5FB3BA12E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D76D387-1BC7-8509-9E14-5D5FB3BA12E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D76D387-1BC7-8509-9E14-5D5FB3BA12E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D76D387-1BC7-8509-9E14-5D5FB3BA12E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

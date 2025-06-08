@@ -28,7 +28,9 @@ namespace AzureSignalRClient
 
             var app = builder.Build();
 
-            var access = new SignalRConnector(builder.Services.BuildServiceProvider().GetRequiredService<HttpClient>());
+            //To-Do: Move this to an index page
+            var signalRConnector = new SignalRConnector(builder.Services.BuildServiceProvider().GetRequiredService<HttpClient>());
+            signalRConnector.StartConnection().GetAwaiter().GetResult();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
