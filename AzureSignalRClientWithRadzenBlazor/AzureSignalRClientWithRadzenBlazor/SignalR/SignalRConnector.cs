@@ -1,5 +1,6 @@
 ﻿using AzureSignalRClientWithRadzenBlazor.Models;
 using Microsoft.AspNetCore.SignalR.Client;
+using Radzen;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,10 +11,12 @@ namespace AzureSignalRClientWithRadzenBlazor.SignalR
         private HttpClient HttpClient;
         private HubConnection _hubConnection;
         private string connectionState = "Not connected";
+        private readonly NotificationService _notificationService;
 
-        public SignalRConnector(IHttpClientFactory httpClientFactory)
+        public SignalRConnector(IHttpClientFactory httpClientFactory, NotificationService notificationService)
         {
             HttpClient = httpClientFactory.CreateClient("SignalRApi");
+            _notificationService = notificationService;
         }
 
         public async Task StartConnection()
@@ -56,6 +59,17 @@ namespace AzureSignalRClientWithRadzenBlazor.SignalR
 
                     _hubConnection.On<string>("PMCDemo", (message) =>
                     {
+                        
+                        var notificaitonMessage =
+                            new NotificationMessage
+                            {
+                                Severity = NotificationSeverity.Info,
+                                Summary = "A new Message was received",
+                                Detail = "message",
+                                Duration = 4000
+                            };
+
+                        _notificationService.Notify(notificaitonMessage);
                         //NotificationService.Notify(new NotificationMessage() {Summary = message });
                         Console.WriteLine($"Message received: {message}");
                         // Handle the message as needed
