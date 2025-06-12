@@ -37,28 +37,26 @@ namespace AzureSignalRFunctionApp_InProcess
         }
 
         [FunctionName("timerbroadcast")]
-        public static async Task TimerBroadcast([TimerTrigger("*/5 * * * * *")] TimerInfo myTimer,
+        public static async Task TimerBroadcast([TimerTrigger("*/10 * * * * *")] TimerInfo myTimer,
         [SignalR(HubName = "serverless")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
-            //var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/azure/azure-signalr");
-            //request.Headers.UserAgent.ParseAdd("Serverless");
-            //request.Headers.Add("If-None-Match", Etag);
-            //var response = await httpClient.SendAsync(request);
-            //if (response.Headers.Contains("Etag"))
-            //{
-            //    Etag = response.Headers.GetValues("Etag").First();
-            //}
-            //if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            //{
-            //    var result = JsonConvert.DeserializeObject<GitResult>(await response.Content.ReadAsStringAsync());
-            //    StarCount = result.StarCount;
-            //}
-
             await signalRMessages.AddAsync(
             new SignalRMessage
             {
                 Target = "PMCDemo",
-                Arguments = [$"Message from Timer-Broadcast method {DateTime.Now}"]
+                Arguments = [$"This message is for PMCDemo broadcast Target - Message from Timer-Broadcast method {DateTime.Now}"]
+            });
+        }
+
+        [FunctionName("timerbroadcastv2")]
+        public static async Task TimerBroadcastV2([TimerTrigger("*/15 * * * * *")] TimerInfo myTimer,
+        [SignalR(HubName = "serverless")] IAsyncCollector<SignalRMessage> signalRMessages)
+        {
+            await signalRMessages.AddAsync(
+            new SignalRMessage
+            {
+                Target = "PulteDemo",
+                Arguments = [$"This message is for PulteDemo broadcast Target - Message from Timer-Broadcast V2 method {DateTime.Now}"]
             });
         }
 

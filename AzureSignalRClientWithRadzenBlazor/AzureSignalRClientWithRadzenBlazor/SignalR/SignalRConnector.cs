@@ -64,13 +64,29 @@ namespace AzureSignalRClientWithRadzenBlazor.SignalR
                             new NotificationMessage
                             {
                                 Severity = NotificationSeverity.Info,
-                                Summary = "A new Message was received",
-                                Detail = "message",
-                                Duration = 4000
+                                Summary = "A new Message for PMCDemo was received",
+                                Detail = message,
+                                Duration = 2000
                             };
 
                         _notificationService.Notify(notificaitonMessage);
-                        //NotificationService.Notify(new NotificationMessage() {Summary = message });
+                        Console.WriteLine($"Message received: {message}");
+                        // Handle the message as needed
+                    });
+
+                    _hubConnection.On<string>("PulteDemo", (message) =>
+                    {
+
+                        var notificaitonMessage =
+                            new NotificationMessage
+                            {
+                                Severity = NotificationSeverity.Success,
+                                Summary = "A new Message for PulteDemo received",
+                                Detail = message,
+                                Duration = 2000
+                            };
+
+                        _notificationService.Notify(notificaitonMessage);
                         Console.WriteLine($"Message received: {message}");
                         // Handle the message as needed
                     });
